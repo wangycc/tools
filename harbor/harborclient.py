@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
+from requests.utils import quote
 import json
 import logging
 import requests
@@ -341,29 +343,31 @@ class HarborClient(object):
     # DELETE /repositories/{repo_name}/tags/{tag}
     def delete_tag_of_repository(self, repo_name, tag):
         result = False
+	repo_name = quote(repo_name,safe='')
         path = '%s://%s/api/repositories/%s/tags/%s' % (self.protocol,self.host,
                                                         repo_name, tag)
         response = requests.delete(path,
                                    cookies={'beegosessionID': self.session_id}, verify=False)
         if response.status_code == 200:
             result = True
-            logger.debug("Successfully delete a tag of repository: {}".format(
+            logger.info("Successfully delete a tag of repository: {}".format(
                 repo_name))
         else:
             logger.error("Fail to delete repository  with name: {}, response code: {}".format(
                 repo_name, response.status_code))
         return result
 
-    # DELETE /repositories/{repo_name}/tags
-    def delete_tags_of_repository(self, repo_name):
+    # DELETE /repositories/{repo_name}
+    def delete_repositories(self, repo_name):
         result = False
-        path = '%s://%s/api/repositories/%s/tags' % (self.protocol,
+	repo_name = quote(repo_name,safe='')
+        path = '%s://%s/api/repositories/%s' % (self.protocol,
                                                      self.host, repo_name)
         response = requests.delete(path,
                                    cookies={'beegosessionID': self.session_id}, verify=False)
         if response.status_code == 200:
             result = True
-            logger.debug("Successfully delete repository: {}".format(
+            logger.info("Successfully delete repository: {}".format(
                 repo_name))
         else:
             logger.error("Fail to delete repository  with name: {}, response code: {}".format(
